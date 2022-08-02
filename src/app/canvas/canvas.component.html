@@ -2,10 +2,17 @@
   <div class="col-8">
     <button (click)="autoDraw()" class="btn btn-sm">Auto Draw</button>
     <button (click)="refresh()" class="btn btn-sm ml-3">Refresh</button>
+    <button (click)="save()" id="save" class="btn btn-sm ml-3">Save</button>
+    <button (click)="clear()" class="btn btn-sm ml-3">Clear</button>
   </div>
 </div>
 <div class="row justify-content-center m-0">
-  <div class="col-8">
-    <canvas #myCanvas width="1000px" height="400px"></canvas>
+  <div class="col-12">
+    <canvas #myCanvas width="1600" height="400"></canvas>
+  </div>
+</div>
+<div class="row justify-content-center m-0">
+  <div class="col-12">
+    <img [src]="imageSrc" />
   </div>
 </div>
