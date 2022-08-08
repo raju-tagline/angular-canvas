@@ -1,3 +1,4 @@
+import { GraphLineElement } from './canvas.element';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -6,16 +7,15 @@ import { AppComponent } from './app.component';
 import { CanvasComponent } from './canvas/canvas.component';
 import { AngularCanvasComponent } from './angular-canvas/angular-canvas.component';
 import { CanvasDomModule } from 'angular-canvas';
-import { GraphLineComponent } from './graph-line/graph-line.component';
+// import { GraphLineComponent } from './graph-line/graph-line.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    CanvasComponent,
-    AngularCanvasComponent,
-    GraphLineComponent,
+  declarations: [AppComponent, CanvasComponent, AngularCanvasComponent],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    CanvasDomModule.forRoot([GraphLineElement]),
   ],
-  imports: [BrowserModule, AppRoutingModule, CanvasDomModule.forRoot([])],
   providers: [],
   bootstrap: [AppComponent],
 })

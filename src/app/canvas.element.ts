@@ -1,22 +1,17 @@
-import { Component, OnInit } from '@angular/core';
 import { CanvasElement, NgCanvasElement, NgCanvas } from 'angular-canvas';
 
-@Component({
+@CanvasElement({
   selector: 'graph-line',
-  templateUrl: './graph-line.component.html',
-  styleUrls: ['./graph-line.component.scss'],
 })
-export class GraphLineComponent implements OnInit {
+export class GraphLineElement implements NgCanvasElement {
+  // parent element
   public parent!: NgCanvas;
 
+  // canvas element redraw until all NgCanvasElement needDraw as true
   public needDraw!: boolean;
 
-  constructor() {}
-
-  ngOnInit(): void {}
-
   setNgProperty(name: string, value: any): void {
-    // this[name] = value;
+    name = value;
 
     // redraw all element in one canvas context after set ng property
     this.parent.drawAll();

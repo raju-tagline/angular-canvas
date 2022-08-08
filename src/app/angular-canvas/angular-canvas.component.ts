@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { CanvasComponent } from 'angular-canvas';
 
+@CanvasComponent
 @Component({
   selector: 'app-angular-canvas',
   templateUrl: './angular-canvas.component.html',

@@ -44,23 +44,103 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   @ViewChild('myCanvas', { static: false }) myCanvas!: ElementRef;
   public imageSrc: any;
   cx: any;
-  // width="1600" height="400"
-  canvas = { width: 1600, height: 500 };
+  canvas = { width: 1000, height: 500 };
   currentLocation = { x: 533, y: 0 };
   preDirection!: string;
   reader = new FileReader();
 
   locationList: any = [];
 
-  constructor(private el: ElementRef) {}
+  constructor(private el: ElementRef) {
+    console.log('this.el :>> ', this.el.nativeElement);
+  }
 
   ngOnInit() {
-    console.log('this.canvas.width :>> ', this.canvas.width);
     if (localStorage.getItem('canvas_drawing')) {
       const jsonData: any = localStorage.getItem('canvas_drawing');
       this.imageSrc = JSON.parse(jsonData).image;
     }
-    
+  }
+
+  updateGridSize() {
+    this.drawGrid(
+      Math.fround(this.canvas.width),
+      Math.fround(this.canvas.width / 3),
+      Math.fround(this.canvas.width / 3)
+    );
+  }
+
+  async drawGrid(w: number, h: number, s: number) {
+    // Setup canvas size
+    const cw = Math.fround(w + 1);
+    const ch = Math.fround(h + 1);
+
+    // Square Size
+    const squareSize = Math.fround(s);
+
+    // Resize canvas element
+    if (this.myCanvas) {
+      this.myCanvas.nativeElement.width = cw;
+      this.myCanvas.nativeElement.height = ch;
+      let rowCounter = 0;
+      let colCounter = -1;
+      // Canvas Context
+      const ctx: CanvasRenderingContext2D =
+        this.myCanvas.nativeElement.getContext('2d');
+      // Clear any previous content
+      ctx.clearRect(0, 0, cw, ch);
+      // Set line color
+      ctx.strokeStyle = '#333';
+      // Set font size and color
+      ctx.font = 'normal ' + Math.fround(squareSize / 3) + 'px arial';
+      ctx.fillStyle = 'orange';
+
+      // Drawing Setup
+      ctx.beginPath();
+
+      // const mouseMove$: any = fromEvent(
+      //   this.myCanvas.nativeElement,
+      //   'mousemove'
+      // );
+      // const mouseDown$: any = fromEvent(
+      //   this.myCanvas.nativeElement,
+      //   'mousedown'
+      // );
+      // const mouseUp$: any = fromEvent(this.myCanvas.nativeElement, 'mouseup');
+
+      // mouseDown$.pipe(
+      //   concatMap((down) => mouseMove$.pipe(takeUntil(mouseUp$)))
+      // );
+
+      // const mouseDraw$: any = mouseDown$.pipe(
+      //   tap((e: MouseEvent) => {
+      //     ctx.moveTo(e.offsetX, e.offsetY);
+      //   }),
+      //   concatMap(() => mouseMove$.pipe(takeUntil(mouseUp$)))
+      // );
+
+      // mouseDraw$.subscribe((e: MouseEvent) => {
+      //   ctx.lineTo(e.offsetX, e.offsetY);
+      //   ctx.stroke();
+      // });
+
+      // Vertical Lines and label
+      for (let x = Math.fround(0.5); x < cw; x += squareSize) {
+        // Lines
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, ch);
+        // Label
+        const colLabel = '';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'top';
+        ctx.fillText(colLabel, Math.fround(x + squareSize / 2), 0);
+        ctx.setLineDash([3, 3, 3, 3]);
+      }
+
+      // Drawing
+
+      ctx.stroke();
+    }
   }
 
   ngAfterViewInit(): void {
@@ -74,13 +154,17 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     mouseDown$.pipe(concatMap((down) => mouseMove$.pipe(takeUntil(mouseUp$))));
 
     const mouseDraw$: any = mouseDown$.pipe(
-      tap((e: MouseEvent) => {
-        this.cx.moveTo(e.offsetX, e.offsetY);
-      }),
+      tap((e: MouseEvent) => 
+        this.cx.moveTo(e.offsetX, e.offsetY)
+      ),
       concatMap(() => mouseMove$.pipe(takeUntil(mouseUp$)))
     );
-
     mouseDraw$.subscribe((e: MouseEvent) => this.draw(e.offsetX, e.offsetY));
+    this.drawGrid(
+      this.canvas.width,
+      this.canvas.width / 3,
+      this.canvas.width / 3
+    );
   }
 
   draw(offsetX: any, offsetY: any) {
@@ -88,12 +172,12 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.cx.stroke();
   }
 
-  autoDraw() {
-    const runTimes = 100;
-    for (let i = 0; i < runTimes; i++) {
-      this.excuteAutoDraw();
-    }
-  }
+  // autoDraw() {
+  //   const runTimes = 100;
+  //   for (let i = 0; i < runTimes; i++) {
+  //     this.excuteAutoDraw();
+  //   }
+  // }
 
   save() {
     const canvas: any = document.querySelector('canvas');
@@ -120,7 +204,9 @@ export class CanvasComponent implements OnInit, AfterViewInit {
   }
 
   clear() {
+    localStorage.removeItem('canvas_drawing');
     this.cx.reset();
+    this.updateGridSize();
   }
 
   excuteAutoDraw() {
