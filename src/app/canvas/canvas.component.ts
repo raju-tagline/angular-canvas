@@ -7,33 +7,6 @@ import {
 } from '@angular/core';
 import { fromEvent } from 'rxjs';
 import { tap, concatMap, takeUntil } from 'rxjs/operators';
-import Canvas from '../canvas.json';
-
-export enum Direction {
-  up,
-  left,
-  down,
-  right,
-}
-
-export const DistanceConfig: any = {
-  up: {
-    x: 0,
-    y: 10,
-  },
-  left: {
-    x: -10,
-    y: 0,
-  },
-  down: {
-    x: 0,
-    y: -10,
-  },
-  right: {
-    x: 10,
-    y: 0,
-  },
-};
 
 @Component({
   selector: 'app-canvas',
@@ -43,30 +16,30 @@ export const DistanceConfig: any = {
 export class CanvasComponent implements OnInit, AfterViewInit {
   @ViewChild('myCanvas', { static: false }) myCanvas!: ElementRef;
   public imageSrc: any;
+  public isClear: boolean = false;
   cx: any;
-  canvas = { width: 1000, height: 500 };
+  canvas = { width: 900, height: 350 };
   currentLocation = { x: 533, y: 0 };
   preDirection!: string;
   reader = new FileReader();
 
   locationList: any = [];
 
-  constructor(private el: ElementRef) {
-    console.log('this.el :>> ', this.el.nativeElement);
-  }
+  constructor(private el: ElementRef) {}
 
   ngOnInit() {
     if (localStorage.getItem('canvas_drawing')) {
       const jsonData: any = localStorage.getItem('canvas_drawing');
       this.imageSrc = JSON.parse(jsonData).image;
+      this.isClear = true;
     }
   }
 
   updateGridSize() {
     this.drawGrid(
-      Math.fround(this.canvas.width),
-      Math.fround(this.canvas.width / 3),
-      Math.fround(this.canvas.width / 3)
+      this.canvas.width,
+      this.canvas.width / 3,
+      this.canvas.width / 3
     );
   }
 
@@ -82,62 +55,27 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     if (this.myCanvas) {
       this.myCanvas.nativeElement.width = cw;
       this.myCanvas.nativeElement.height = ch;
-      let rowCounter = 0;
-      let colCounter = -1;
-      // Canvas Context
       const ctx: CanvasRenderingContext2D =
         this.myCanvas.nativeElement.getContext('2d');
-      // Clear any previous content
       ctx.clearRect(0, 0, cw, ch);
-      // Set line color
       ctx.strokeStyle = '#333';
-      // Set font size and color
-      ctx.font = 'normal ' + Math.fround(squareSize / 3) + 'px arial';
+      // ctx.font = 'normal ' + Math.fround(squareSize / 3) + 'px arial';
+      ctx.font = '25' + 'px sans-serif';
       ctx.fillStyle = 'orange';
-
-      // Drawing Setup
       ctx.beginPath();
-
-      // const mouseMove$: any = fromEvent(
-      //   this.myCanvas.nativeElement,
-      //   'mousemove'
-      // );
-      // const mouseDown$: any = fromEvent(
-      //   this.myCanvas.nativeElement,
-      //   'mousedown'
-      // );
-      // const mouseUp$: any = fromEvent(this.myCanvas.nativeElement, 'mouseup');
-
-      // mouseDown$.pipe(
-      //   concatMap((down) => mouseMove$.pipe(takeUntil(mouseUp$)))
-      // );
-
-      // const mouseDraw$: any = mouseDown$.pipe(
-      //   tap((e: MouseEvent) => {
-      //     ctx.moveTo(e.offsetX, e.offsetY);
-      //   }),
-      //   concatMap(() => mouseMove$.pipe(takeUntil(mouseUp$)))
-      // );
-
-      // mouseDraw$.subscribe((e: MouseEvent) => {
-      //   ctx.lineTo(e.offsetX, e.offsetY);
-      //   ctx.stroke();
-      // });
-
-      // Vertical Lines and label
       for (let x = Math.fround(0.5); x < cw; x += squareSize) {
-        // Lines
         ctx.moveTo(x, 0);
         ctx.lineTo(x, ch);
-        // Label
+
         const colLabel = '';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'top';
         ctx.fillText(colLabel, Math.fround(x + squareSize / 2), 0);
-        ctx.setLineDash([3, 3, 3, 3]);
+        ctx.setLineDash([5, 3]);
+        // ctx.setLineDash([3, 3, 3, 3]);
       }
-
-      // Drawing
+      // ctx.rect(10, 20, 150, 100);
+      // ctx.fillRect(5, 10, 75, 50);
 
       ctx.stroke();
     }
@@ -154,9 +92,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     mouseDown$.pipe(concatMap((down) => mouseMove$.pipe(takeUntil(mouseUp$))));
 
     const mouseDraw$: any = mouseDown$.pipe(
-      tap((e: MouseEvent) => 
-        this.cx.moveTo(e.offsetX, e.offsetY)
-      ),
+      tap((e: MouseEvent) => this.cx.moveTo(e.offsetX, e.offsetY)),
       concatMap(() => mouseMove$.pipe(takeUntil(mouseUp$)))
     );
     mouseDraw$.subscribe((e: MouseEvent) => this.draw(e.offsetX, e.offsetY));
@@ -165,6 +101,32 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       this.canvas.width / 3,
       this.canvas.width / 3
     );
+    // const ctx1 = this.cx;
+
+    // ctx1.beginPath();
+    // ctx1.arc(240, 20, 40, 0, Math.PI);
+    // ctx1.moveTo(100, 20);
+    // ctx1.arc(60, 20, 40, 0, Math.PI);
+    // ctx1.moveTo(215, 80);
+    // ctx1.arc(150, 80, 65, 0, Math.PI);
+    // ctx1.closePath();
+    // ctx1.lineWidth = 6;
+    // ctx1.stroke();
+
+    // const ctx = this.cx;
+
+    // ctx.beginPath();
+    // ctx.shadowColor = 'rgba(255, 0, 0, .8)';
+    // ctx.shadowBlur = 8;
+    // ctx.shadowOffsetX = 30;
+    // ctx.shadowOffsetY = 20;
+
+    // ctx.fillStyle = 'rgba(0, 255, 0, .2)';
+    // ctx.fillRect(10, 10, 150, 100);
+
+    // ctx.lineWidth = 10;
+    // ctx.strokeStyle = 'rgba(0, 0, 255, .6)';
+    // ctx.strokeRect(10, 10, 150, 100);
   }
 
   draw(offsetX: any, offsetY: any) {
@@ -172,12 +134,12 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     this.cx.stroke();
   }
 
-  // autoDraw() {
-  //   const runTimes = 100;
-  //   for (let i = 0; i < runTimes; i++) {
-  //     this.excuteAutoDraw();
-  //   }
-  // }
+  autoDraw() {
+    const runTimes = 100;
+    for (let i = 0; i < runTimes; i++) {
+      this.excuteAutoDraw();
+    }
+  }
 
   save() {
     const canvas: any = document.querySelector('canvas');
@@ -188,8 +150,9 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     if (localStorage.getItem('canvas_drawing')) {
       const jsonData: any = localStorage.getItem('canvas_drawing');
       this.imageSrc = JSON.parse(jsonData).image;
+      this.isClear = true;
     }
-    // console.log('string :>> ', drawJson);
+    // let string:any = JSON.stringify(data);
     // const file = new Blob([string], {
     //   type: 'application/json',
     // });
@@ -199,18 +162,17 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     // a.download = 'canvas.json';
     // document.body.appendChild(a);
     // a.click();
-    // console.log('a :>> ', a);
     // document.body.removeChild(a);
   }
 
   clear() {
     localStorage.removeItem('canvas_drawing');
     this.cx.reset();
+    this.isClear = false;
     this.updateGridSize();
   }
 
   excuteAutoDraw() {
-    // const direction = this.getDirection();
     const newDir: any = [
       {
         x: this.canvas.width / 3,
@@ -222,13 +184,10 @@ export class CanvasComponent implements OnInit, AfterViewInit {
       },
     ];
 
-    // const distance = DistanceConfig[direction];
     newDir.forEach((ele: any) => {
       if (ele) {
         const distance = ele;
         const newLocation: any = { ...ele };
-        // newLocation.x = newLocation.x;
-        // newLocation.y = newLocation.y;
 
         if (this.isNewPath(newLocation)) {
           this.currentLocation = { ...ele, y: 0 };
@@ -238,6 +197,7 @@ export class CanvasComponent implements OnInit, AfterViewInit {
           this.currentLocation = newLocation;
           this.locationList.push(newLocation);
         }
+        this.cx.strokeStyle = 'red';
         this.cx.stroke();
       }
     });
@@ -250,14 +210,8 @@ export class CanvasComponent implements OnInit, AfterViewInit {
     return idx == -1;
   }
 
-  getDirection() {
-    const idx = Math.floor(Math.random() * 4);
-    return Direction[idx];
-  }
-
   refresh() {
-    console.log('this.canvas.width :>> ', this.canvas.width);
-    console.log('this.canvas.height :>> ', this.canvas.height);
     this.cx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.updateGridSize();
   }
 }

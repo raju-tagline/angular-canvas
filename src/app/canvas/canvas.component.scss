@@ -10,8 +10,22 @@ canvas {
   margin-left: 10px;
 }
 
-img{
+img {
   width: 750px;
   height: 250px;
   margin-left: -200px !important;
+}
+.divide_canvas {
+  position: absolute;
+  z-index: -1;
+  top: 90px;
+  bottom: 0;
+  border-left: 2px dotted #444;
+}
+.divide_canvas1 {
+  position: absolute;
+  z-index: -1;
+  top: 90px;
+  bottom: 0;
+  border-left: 2px dotted #444;
 }
